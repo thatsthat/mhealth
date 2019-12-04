@@ -1,7 +1,7 @@
 var gplay = require('google-play-scraper');
 
 gplay.search({
-    term: "hay fever",
+    term: "hayfever",
     lang: "en",
     country: "us",
     price: "free",
