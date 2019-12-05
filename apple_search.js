@@ -1,12 +1,19 @@
 var store = require('app-store-scraper');
+var fs = require('fs');
 
-store.search({
+opts = {
     term: 'hay fever',
+    lang: 'en-us',
+    country : 'us',
     num: 3,
     page: 1,
-    country : 'us',
-    idsOnly: false,
-    lang: 'en-us'
-})
-    .then(console.log)
-    .catch(console.log);
+    idsOnly: false // skip extra lookup request for each app
+};
+
+store.search(opts)
+    .then( (results, err) => {
+	fs.writeFile('apple_results.txt', JSON.stringify(results), (err) => {
+	   if (err) throw err;
+	   console.log('iOS apps saved!');
+       });
+   }).catch();
