@@ -11,7 +11,7 @@ opts = {
 };
 
 var search_term = opts.term.split(' ').join('_');
-var file_name = ['google_results_'+search_term+'_'+opts.country+'.txt'];
+var file_name = ['results/google_results_'+search_term+'_'+opts.country+'.txt'];
 
 gplay.search(opts)
     .then( (results, err) => {
