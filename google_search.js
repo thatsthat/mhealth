@@ -8,6 +8,7 @@ opts = {
     num: process.argv[4],      // Number of search results, max is 250
     price: 'free:',            // all, free, paid
     fullDetail: false          // if true an extra request is made for each app
+    throttle: 10	       // Throttle to X requests per second
 };
 
 var search_term = opts.term.split(' ').join('_');

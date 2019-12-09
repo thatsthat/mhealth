@@ -7,7 +7,7 @@ opts = {
     country : process.argv[3],  // iOS App Store country 2 letter code
     num: process.argv[4],	// Number of search results, default 50
     page: process.argv[5],	// Results page to retrieve
-    idsOnly: true 		// skip extra request for each app
+    idsOnly: false 		// skip extra request for each app
 };
 
 var search_term = opts.term.split(' ').join('_');
