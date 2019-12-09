@@ -15,7 +15,16 @@ var file_name = ['results/apple_results_'+search_term+'_'+opts.country+'.txt'];
 
 store.search(opts)
     .then( (results, err) => {
-	fs.writeFile(file_name.toString(), JSON.stringify(results), (err) => {
+	results = results.map(function(res) {
+	    return { title: res.title,
+		     appId: res.appId,
+		     id: res.id,
+		     url: res.url,
+		     description: res.description,
+		     primaryGenre: res.primaryGenre
+		   };
+	});
+	fs.writeFile(file_name.toString(), JSON.stringify(results, null, 2), (err) => {
 	   if (err) throw err;
 	   console.log('iOS apps saved!');
        });
