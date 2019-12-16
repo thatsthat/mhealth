@@ -20,7 +20,9 @@ gplay.search(opts)
 	    return { title: res.title,
 		     appId: res.appId,
 		     url: res.url,
-		     summary: res.summary
+		     // summary: res.summary,
+		     country: opts.country,
+		     term: opts.term
 		   };
 	});
 	fs.writeFile(file_name.toString(), JSON.stringify(results, null, 2), (err) => {
