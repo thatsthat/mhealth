@@ -11,14 +11,16 @@ justDoIt()
     }).catch();  
 
 async function justDoIt(){
-    // var terms = ['house'];
     var terms = ['hay fever', 'hayfever', 'asthma', 'allergic rhinitis'];
+    var countries = ['us', 'au'];
     var resu = [];
 
     for (let i = 0; i < terms.length; i++) {
-	const results2 = await scrapeApps(terms[i], process.argv[2], process.argv[3], process.argv[4])
-	resu = resu.concat(pruneResults(results2, terms[i], process.argv[2]));
-	console.log(i);
+	for (let j = 0; j < countries.length; j++) { 
+	    const results2 = await scrapeApps(terms[i], countries[j], process.argv[2], process.argv[3])
+	    resu = resu.concat(pruneResults(results2, terms[i], countries[j]));
+	    console.log(i);
+	}
     }
     return resu
 }
