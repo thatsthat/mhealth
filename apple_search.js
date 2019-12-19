@@ -3,21 +3,21 @@ var fs = require('fs');
 
 justDoIt()
     .then( (resul, err) => {
-	const file_name = ['results/apple_results_'+process.argv[2]+'.txt'];
-	fs.writeFile(file_name.toString(), JSON.stringify(resul, null, 2), (err) => {
-	    if (err) throw err;
-	    console.log('iOS apps saved!');
-	});
+//	const file_name = ['results/apple_results_'+process.argv[2]+'.txt'];
+//	fs.writeFile(file_name.toString(), JSON.stringify(resul, null, 2), (err) => {
+//	    if (err) throw err;
+	    console.log(JSON.stringify(resul, null, 2));
+//	});
     }).catch();  
 
 async function justDoIt(){
-    var terms = ['hay fever', 'hayfever', 'asthma', 'allergic rhinitis'];
-    var countries = ['us', 'au'];
+    var terms = ['hay fever'];//, 'hayfever', 'asthma', 'allergic rhinitis'];
+    var countries = ['us'];
     var resu = [];
 
     for (let i = 0; i < terms.length; i++) {
 	for (let j = 0; j < countries.length; j++) { 
-	    const results2 = await scrapeApps(terms[i], countries[j], process.argv[2], process.argv[3])
+	    const results2 = await scrapeApps(terms[i], countries[j], process.argv[2], 1)
 	    resu = resu.concat(pruneResults(results2, terms[i], countries[j]));
 	    console.log(i);
 	}

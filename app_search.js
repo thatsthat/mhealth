@@ -4,16 +4,16 @@ var fs = require('fs');
 
 justDoIt()
     .then( (resul, err) => {
-	const file_name = ['results/google_results_'+process.argv[2]+'.txt'];
+	const file_name = ['results/App_Results_'+process.argv[2]+'.txt'];
 	fs.writeFile(file_name.toString(), JSON.stringify(resul, null, 2), (err) => {
 	    if (err) throw err;
-	    console.log('iOS apps saved!');
+	    console.log('Apps saved!');
 	});
     }).catch();  
 
 async function justDoIt(){
     var terms = ['hay fever', 'hayfever', 'asthma', 'allergic rhinitis'];
-    var countries = ['us', 'au'];
+    var countries = ['au'];
     var resAll = [];
 
     for (let i = 0; i < terms.length; i++) {
@@ -22,7 +22,6 @@ async function justDoIt(){
 	    resAll = resAll.concat(pruneGoogle(resGoogle, terms[i], countries[j]));
 	    const resApple = await scrapeApple(terms[i], countries[j], process.argv[2])
 	    resAll = resAll.concat(pruneApple(resApple, terms[i], countries[j]));
-	    console.log(i);
 	}
     }
     return resAll
@@ -34,7 +33,7 @@ function scrapeGoogle(terms, countr, nums) {
 	lang: 'en',                // App language
 	country: countr,  // Gplay store country 2 letter code
 	num: nums,      // Number of search results, max is 250
-	price: 'free:',            // all, free, paid
+	price: 'all',            // all, free, paid
 	fullDetail: false,         // if true an extra request is made for each app
 	throttle: 10	       // Throttle to X requests per second
     };
@@ -81,4 +80,4 @@ function pruneApple(fullResults, searchTerms, country) {
 	       };
     });
     return prunedResults
-}			 
+}
