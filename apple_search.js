@@ -6,7 +6,8 @@ justDoIt()
 //	const file_name = ['results/apple_results_'+process.argv[2]+'.txt'];
 //	fs.writeFile(file_name.toString(), JSON.stringify(resul, null, 2), (err) => {
 //	    if (err) throw err;
-	    console.log(JSON.stringify(resul, null, 2));
+	console.log(resul)
+//	console.log(JSON.stringify(resul, null, 2));
 //	});
     }).catch();  
 
@@ -19,7 +20,7 @@ async function justDoIt(){
 	for (let j = 0; j < countries.length; j++) { 
 	    const results2 = await scrapeApps(terms[i], countries[j], process.argv[2], 1)
 	    resu = resu.concat(pruneResults(results2, terms[i], countries[j]));
-	    console.log(i);
+//	    console.log(i);
 	}
     }
     return resu

@@ -1,38 +1,44 @@
 var gplay = require('google-play-scraper');
 
-justDoIt();
+// gScrape();
 
-async function justDoIt() {
+module.exports = {
 
-    let res = await gplay.search({
-	throttle: 5,
-	term: "hay fever",
-	num: 4,
-	fullDetail: true
-    })
-    
-    res = await getFullRes(res);
-    res= pruneGoogle(res);
-    console.log(res);
-    
-}
- 
+    gScrape: async function (terms, countr, nums) {
+	let res = await gplay.search({
+	    term: terms,     // Search expression
+	    lang: 'en',                // App language
+	    country: countr,  // Gplay store country 2 letter code
+	    num: nums,      // Number of search results, max is 250
+	    price: 'all',            // all, free, paid
+	    fullDetail: true,         // if true an extra request is made for each app
+	    throttle: 5	       // Throttle to X requests per second
+	})
+	res = await getFullRes(res);
+	return pruneGoogle(res, terms, countr);
+	//console.log(res);	
+    }
+}    
+
 async function getFullRes(shortRes) {
     return Promise.all(
 	shortRes.map(async a => {
-	return await gplay.app({ appId: a.appId })
+	    return await gplay.app({ appId: a.appId })
 	}) 		
     )
 }
-   
-function pruneGoogle(fullResults) {
+
+function pruneGoogle(fullResults, searchTerms, country) {
     return fullResults.map(function(res) {
 	return { title: res.title,
 		 appId: res.appId,
 		 url: res.url,
-		 genre: res.genre,
-		 genreId: res.genreId
 		 // summary: res.summary,
-	       };
+		 genre: res.genre,
+		 terms: searchTerms,
+		 countries: country,
+		 google: true,
+		 apple: false
+	       }
     });
 }
