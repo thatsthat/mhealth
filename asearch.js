@@ -24,8 +24,7 @@ function pruneResults(fullResults, searchTerms, country) {
 		 genre: res.primaryGenre,
 		 terms: searchTerms,
 		 countries: country,
-		 google: false,
-		 apple: true
+		 store: 'Apple'
 	       };
     })
 }

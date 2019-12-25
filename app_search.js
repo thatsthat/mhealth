@@ -12,8 +12,9 @@ justDoIt()
     }).catch();  
 
 async function justDoIt(){
-    var terms = ['hay fever', 'hayfever', 'asthma', 'allergic rhinitis'];
-    var countries = ['au', 'be'];
+    var terms = ['hay fever', 'hayfever', 'asthma', 'rhinitis', 'allergic rhinitis'];
+    // var terms = ['rhinitis', 'allergic rhinitis'];
+    var countries = ['au', 'us', 'gb', 'be'];
     var resAll = [];
     
     for (let i = 0; i < terms.length; i++) {
@@ -24,5 +25,35 @@ async function justDoIt(){
 	    resAll = resAll.concat(resApple);
 	}
     }
-    return resAll
+    return mergeDups(resAll)
+}
+
+function mergeDups(fullRes) {
+
+    var groupedRes = [];
+    var iterRes = fullRes;;
+
+    while (iterRes.length>0) {
+	currTitle = iterRes[0].title;
+	var filtRes = iterRes.filter(element => element.title.toUpperCase() == currTitle.toUpperCase());
+	iterRes = iterRes.filter(element => element.title.toUpperCase() != currTitle.toUpperCase());
+	groupedObj = filtRes.reduce((ac, cv) => {
+	    ac.title = cv.title;
+	    if (!(ac.countries.includes(cv.countries))) {
+		ac.countries = ac.countries.concat([', ' + cv.countries])}
+	    if (!(ac.terms.includes(cv.terms))) {
+		ac.terms = ac.terms.concat([', ' + cv.terms])}
+	    if (!(ac.store.includes(cv.store))) {
+		ac.store = ac.store.concat([', ' + cv.store])}
+	    if (!(ac.appId.includes(cv.appId))) {
+		ac.appId = ac.appId.concat([', ' + cv.appId])}
+	    if (!(ac.url.includes(cv.url))) {
+		ac.url = ac.url.concat([', ' + cv.url])}
+	    if (!(ac.genre.includes(cv.genre))) {
+		ac.genre = ac.genre.concat([', ' + cv.genre])}
+	    return ac;
+	})
+	groupedRes.push(groupedObj);
+    }
+    return groupedRes;
 }

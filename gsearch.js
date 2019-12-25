@@ -37,8 +37,7 @@ function pruneGoogle(fullResults, searchTerms, country) {
 		 genre: res.genre,
 		 terms: searchTerms,
 		 countries: country,
-		 google: true,
-		 apple: false
+		 store: 'Google'
 	       }
     });
 }

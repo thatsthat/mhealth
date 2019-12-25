@@ -12,8 +12,8 @@ justDoIt()
     }).catch();  
 
 async function justDoIt(){
-    var terms = ['hay fever'];//, 'hayfever', 'asthma', 'allergic rhinitis'];
-    var countries = ['us'];
+    var terms = ['hay fever', 'hayfever'];//, 'hayfever', 'asthma', 'allergic rhinitis'];
+    var countries = ['us', 'au'];
     var resu = [];
 
     for (let i = 0; i < terms.length; i++) {
