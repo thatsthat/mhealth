@@ -16,7 +16,16 @@ module.exports = {
 }
 			
 function pruneResults(fullResults, searchTerms, country) {
+    var sc0re;
     return fullResults.map(res => {
+	if (res.score == undefined)
+	{
+	    sc0re = '';
+	}
+	else
+	{
+	    sc0re = res.score;
+	}
 	return { title: res.title,
 		 appId: res.appId,
 		 url: res.url,
@@ -24,7 +33,12 @@ function pruneResults(fullResults, searchTerms, country) {
 		 genre: res.primaryGenre,
 		 terms: searchTerms,
 		 countries: country,
-		 store: 'Apple'
+		 store: 'Apple',
+		 description: res.description,
+		 installs: '',
+		 score: sc0re,
+		 ratings: '',
+		 updated: res.updated
 	       };
     })
 }

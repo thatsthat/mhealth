@@ -47,8 +47,6 @@ function mergeDups(fullRes) {
 		ac.store = ac.store.concat([', ' + cv.store])}
 	    if (!(ac.appId.includes(cv.appId))) {
 		ac.appId = ac.appId.concat([', ' + cv.appId])}
-	    if (!(ac.url.includes(cv.url))) {
-		ac.url = ac.url.concat([', ' + cv.url])}
 	    if (!(ac.genre.includes(cv.genre))) {
 		ac.genre = ac.genre.concat([', ' + cv.genre])}
 	    return ac;

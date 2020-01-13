@@ -37,7 +37,12 @@ function pruneGoogle(fullResults, searchTerms, country) {
 		 genre: res.genre,
 		 terms: searchTerms,
 		 countries: country,
-		 store: 'Google'
+		 store: 'Google',
+		 description: res.description,
+		 installs: res.installs,
+		 score: res.score,
+		 ratings: res.ratings,
+		 updated: res.updated
 	       }
     });
 }
