@@ -1,0 +1,28 @@
+{
+  "name": "mhealth",
+  "version": "1.0.0",
+  "description": "data scraping from google and apple stores",
+  "main": "app_search.js",
+  "dependencies": {
+    "app-store-scraper": "^0.16.2",
+    "google-play-scraper": "^7.1.1",
+    "string-similarity": "^4.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eltriplet/mhealth.git"
+  },
+  "keywords": [
+    "mhealth"
+  ],
+  "author": "Aram",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eltriplet/mhealth/issues"
+  },
+  "homepage": "https://github.com/eltriplet/mhealth#readme"
+}

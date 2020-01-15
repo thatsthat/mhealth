@@ -1,36 +1,23 @@
+var stringSimilarity = require('string-similarity');
 var store = require('google-play-scraper');
 var fs = require('fs');
 
 justDoIt()
     .then( (resul, err) => {
-//	const file_name = ['results/google_results_'+process.argv[2]+'.txt'];
-//	fs.writeFile(file_name.toString(), JSON.stringify(resul, null, 2), (err) => {
-//	    if (err) throw err;
-	    console.log(JSON.stringify(resul, null, 2));
-//	});
+	console.log(JSON.stringify(resul, null, 2));
+	console.log(stringSimilarity.compareTwoStrings(process.argv[2].toUpperCase(), resul[0].title.toUpperCase())); 
     }).catch();  
 
 async function justDoIt(){
-    var terms = ['hayfever'];//, 'hayfever', 'asthma', 'allergic rhinitis'];
-    var countries = ['be'];//, 'au'];
-    var resu = [];
-
-    for (let i = 0; i < terms.length; i++) {
-	for (let j = 0; j < countries.length; j++) { 
-	    const results2 = await scrapeApps(terms[i], countries[j], process.argv[2])
-	    resu = resu.concat(results2);
-	    //resu = resu.concat(pruneResults(results2, terms[i], countries[j]));
-	}
-    }
-    return resu
+    return  await scrapeApps(process.argv[2], process.argv[3], process.argv[4])
 }
 
-function scrapeApps(terms, countr, nums) { 
+function scrapeApps(term, num, countr) { 
     opts = {
-	term: terms,     // Search expression
+	term: term,     // Search expression
 	lang: 'en',                // App language
 	country: countr,  // Gplay store country 2 letter code
-	num: nums,      // Number of search results, max is 250
+	num: num,      // Number of search results, max is 250
 	price: 'all',            // all, free, paid
 	fullDetail: true,         // if true an extra request is made for each app
 	throttle: 10	       // Throttle to X requests per second

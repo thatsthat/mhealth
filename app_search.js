@@ -1,6 +1,7 @@
 var gStore = require('./gsearch.js')
 var aStore = require('./asearch.js');
 var fs = require('fs');
+var simil = require('string-similarity'); 
 
 justDoIt()
     .then( (resul, err) => {
@@ -25,7 +26,10 @@ async function justDoIt(){
 	    resAll = resAll.concat(resApple);
 	}
     }
-    return mergeDups(resAll)
+    var firstRound = mergeDups(resAll);
+    var secRound = await findMissing(firstRound);
+
+    return mergeDups(secRound);
 }
 
 function mergeDups(fullRes) {
@@ -54,4 +58,32 @@ function mergeDups(fullRes) {
 	groupedRes.push(groupedObj);
     }
     return groupedRes;
+}
+
+async function findMissing(fullRes) {
+
+    var missingApps = [];
+    // debugger;
+    var filtRes = fullRes.filter(element => element.store.split(',').length == 1) // Leave only apps present in one store
+
+    for (let i=0; i<filtRes.length; i++) {
+	var app = [];
+	country = filtRes[i].countries.split(',', 1); 			// If multiple countries, take the first one
+	store = filtRes[i].store;
+	title = filtRes[i].title;
+	shortTitle = title.substring(0, 15);
+	if (store == 'Apple') {
+	    try { app = await gStore.gScrape(shortTitle, country[0], 1); }
+	    catch(e) { console.log('No app found'); }
+	}
+	else {
+	    try { app = await aStore.aScrape(shortTitle, country[0], 1); }
+	    catch(e) { console.log('No app found'); }
+	}
+	if (app.length > 0) {
+	    var likely = simil.compareTwoStrings(shortTitle.toUpperCase(), app[0].title.toUpperCase().substring(0, 15));    
+	    if (likely > 0.8) missingApps.push(app[0]);
+	}
+    }
+    return resAll = fullRes.concat(missingApps)
 }

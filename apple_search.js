@@ -3,39 +3,25 @@ var fs = require('fs');
 
 justDoIt()
     .then( (resul, err) => {
-//	const file_name = ['results/apple_results_'+process.argv[2]+'.txt'];
-//	fs.writeFile(file_name.toString(), JSON.stringify(resul, null, 2), (err) => {
-//	    if (err) throw err;
 	console.log(resul)
 //	console.log(JSON.stringify(resul, null, 2));
-//	});
     }).catch();  
 
 async function justDoIt(){
-    var terms = ['hay fever', 'hayfever'];//, 'hayfever', 'asthma', 'allergic rhinitis'];
-    var countries = ['us', 'au'];
-    var resu = [];
-
-    for (let i = 0; i < terms.length; i++) {
-	for (let j = 0; j < countries.length; j++) { 
-	    const results2 = await scrapeApps(terms[i], countries[j], process.argv[2], 1)
-	    resu = resu.concat(pruneResults(results2, terms[i], countries[j]));
-//	    console.log(i);
-	}
-    }
-    return resu
+    var resu =  await scrapeApps(process.argv[2], process.argv[3], process.argv[4]);
+    return pruneResults(resu, process.argv[2], process.argv[3])
 }
 
-function scrapeApps(terms, countr, nums, pages) { 
+function scrapeApps(terms, countr, nums) { 
     opts = {
 	term: terms,// Search expression
 	lang: 'en-us', 		// App language
 	country : countr,  // iOS App Store country 2 letter code
 	num: nums,	// Number of search results, default 50
-	page: pages,	// Results page to retrieve
+	page: 1,	// Results page to retrieve
 	idsOnly: false 		// skip extra request for each app
     };
-    return res = store.search(opts)
+    return store.search(opts)
 }
 
 function pruneResults(fullResults, searchTerms, country) {
