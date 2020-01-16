@@ -34,11 +34,11 @@ function pruneResults(fullResults, searchTerms, country) {
 		 terms: searchTerms,
 		 countries: country,
 		 store: 'Apple',
-		 description: res.description,
+		 description: res.description.substring(0,500),
 		 installs: '',
 		 score: sc0re,
 		 ratings: '',
-		 updated: res.updated
+		 updated: res.updated.substring(0,10)
 	       };
     })
 }

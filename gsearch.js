@@ -29,7 +29,9 @@ async function getFullRes(shortRes) {
 }
 
 function pruneGoogle(fullResults, searchTerms, country) {
-    return fullResults.map(function(res) {
+     return fullResults.map(function(res) {
+	var d = new Date(res.updated);
+	date = [d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate()];
 	return { title: res.title,
 		 appId: res.appId,
 		 url: res.url,
@@ -38,11 +40,11 @@ function pruneGoogle(fullResults, searchTerms, country) {
 		 terms: searchTerms,
 		 countries: country,
 		 store: 'Google',
-		 description: res.description,
+		 description: res.description.substring(0,500),
 		 installs: res.installs,
 		 score: res.score,
 		 ratings: res.ratings,
-		 updated: res.updated
+		 updated: date[0]
 	       }
     });
 }
