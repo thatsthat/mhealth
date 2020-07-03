@@ -39,8 +39,11 @@ function mergeDups(fullRes) {
 
     while (iterRes.length>0) {
 	currTitle = iterRes[0].title;
+	# get currTitle and its duplicates (if any) into filtRes
 	var filtRes = iterRes.filter(element => element.title.toUpperCase() == currTitle.toUpperCase());
+	# remove currTitle and its duplicates from iterRes
 	iterRes = iterRes.filter(element => element.title.toUpperCase() != currTitle.toUpperCase());
+	# group all duplicates into a single app. Concatenate fields that are different
 	groupedObj = filtRes.reduce((ac, cv) => {
 	    ac.title = cv.title;
 	    if (!(ac.countries.includes(cv.countries))) {
