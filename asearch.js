@@ -18,7 +18,10 @@ module.exports = {
 			
 function pruneResults(fullResults, searchTerms, country) {
     var sc0re;
-    return fullResults.map(res => {
+    var relevCats = ['Health & Fitness', 'Medical', 'Weather'];
+    filtRes = fullResults.filter(element => relevCats.includes(element.primaryGenre)) // Leave only apps present in one store
+
+    return filtRes.map(res => {
 	if (res.score == undefined)
 	{
 	    sc0re = '';
@@ -35,6 +38,7 @@ function pruneResults(fullResults, searchTerms, country) {
 		 terms: searchTerms,
 		 countries: country,
 		 store: 'Apple',
+		 inpvars: [searchTerms, country, 'Apple'],
 		 description: res.description.substring(0,500),
 		 installs: '',
 		 score: sc0re,

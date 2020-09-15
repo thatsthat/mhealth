@@ -4,9 +4,9 @@
   "description": "data scraping from google and apple stores",
   "main": "app_search.js",
   "dependencies": {
-    "app-store-scraper": "^0.16.2",
-    "google-play-scraper": "^7.1.1",
-    "string-similarity": "^4.0.1"
+    "app-store-scraper": "^0.16.3",
+    "google-play-scraper": "^8.0.2",
+    "string-similarity": "^4.0.2"
   },
   "devDependencies": {},
   "scripts": {
