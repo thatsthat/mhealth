@@ -31,7 +31,6 @@ async function getFullRes(shortRes) {
 function pruneGoogle(fullResults, searchTerms, country) {
 	var relevCats = ['Health & Fitness', 'Medical', 'Weather'];
     filtRes = fullResults.filter(element => relevCats.includes(element.genre)) // Leave only apps present in one store
-
 	
     return filtRes.map(function(res) {
 	var d = new Date(res.updated);
