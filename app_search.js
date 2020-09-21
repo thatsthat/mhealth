@@ -2,11 +2,17 @@ var gStore = require('./gsearch.js');
 var aStore = require('./asearch.js');
 var fs = require('fs');
 var simil = require('string-similarity');
+const parse2csv = require('json2csv');
+const numApps = process.argv[2];
 
 justDoIt()
   .then((resul, err) => {
-    const file_name = ['results/App_Results_' + process.argv[2] + '.txt'];
-    fs.writeFile(file_name.toString(), JSON.stringify(resul, null, 2), (err) => {
+    const file_name = ['results/App_Results_' + numApps + '.csv'];
+    const resFields = Object.keys(resul[0]);
+    const opts = {fields: resFields, withBOM: true};
+    const resul_csv = parse2csv.parse(resul, opts);
+    fs.writeFile(file_name.toString(), resul_csv, (err) => {
+    //fs.writeFile(file_name.toString(), JSON.stringify(resul_csv, null, 2), (err) => {
       if (err) throw err;
       console.log('Apps saved!');
     });
@@ -14,15 +20,16 @@ justDoIt()
 
 async function justDoIt() {
   var terms = ['hay fever', 'hayfever', 'asthma', 'rhinitis', 'allergic rhinitis'];
-  // var terms = ['rhinitis', 'allergic rhinitis'];
   var countries = ['au', 'us', 'gb', 'be'];
   var resAll = [];
 
   for (let i = 0; i < terms.length; i++) {
     for (let j = 0; j < countries.length; j++) {
-      const resGoogle = await gStore.gScrape(terms[i], countries[j], process.argv[2])
+      console.log(`Searching ${terms[i]} in ${countries[j]} Google Play Store`)
+      const resGoogle = await gStore.gScrape(terms[i], countries[j], numApps)
       resAll = resAll.concat(resGoogle);
-      const resApple = await aStore.aScrape(terms[i], countries[j], process.argv[2])
+      console.log(`Searching ${terms[i]} in ${countries[j]} iOS App Store`)
+      const resApple = await aStore.aScrape(terms[i], countries[j], numApps)
       resAll = resAll.concat(resApple);
     }
   }
