@@ -29,6 +29,9 @@ async function getFullRes(shortRes) {
 
 function pruneGoogle(fullResults, searchTerms, country, err) {
 	const relevCats = ['Health & Fitness', 'Medical', 'Weather'];
+	if (fullResults === undefined)
+		return fullResults;
+
 	const filtRes2 = fullResults.filter(Boolean); // Remove some 'undefined' apps
 	const filtRes1 = filtRes2.filter(element => relevCats.includes(element.genre)) // Leave only apps present in one store
 	var err = 'no error';
