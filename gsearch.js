@@ -29,6 +29,7 @@ async function getFullRes(shortRes) {
 
 function pruneGoogle(fullResults, searchTerms, country, err) {
 	const relevCats = ['Health & Fitness', 'Medical', 'Weather'];
+	var engLang;
 	if (fullResults === undefined)
 		return fullResults;
 
@@ -36,7 +37,6 @@ function pruneGoogle(fullResults, searchTerms, country, err) {
 	const filtRes1 = filtRes2.filter(element => relevCats.includes(element.genre)) // Leave only apps present in one store
 	var err = 'no error';
 
-	const lang = [];
 	const filtRes = filtRes1.filter(element => {
 		const lngDetector = new langDetect();
 		try {
@@ -45,12 +45,16 @@ function pruneGoogle(fullResults, searchTerms, country, err) {
 		catch (e) {
 			err = e;
 		}
-		if ((eps.length) && (eps[0][0] == 'english'))
+		if ((eps.length) && (eps[0][0] == 'english')) {
+			engLang = true;
 			return true;
-		else
-			return false;
+		}
+		else {
+			engLang = false;
+			return true;
+		}
 	});
-	return filtRes.map(function(res) {
+	return filtRes.map(res => {
 		var d = new Date(res.updated);
 		date = [d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()];
 		return {
@@ -61,11 +65,14 @@ function pruneGoogle(fullResults, searchTerms, country, err) {
 			genre: res.genre,
 			terms: searchTerms,
 			countries: country,
+			english: engLang,
 			store: 'Google',
 			description: res.description.substring(0, 2500),
 			installs: res.installs,
-			score: res.score,
-			ratings: res.ratings,
+			score_a: [0],
+			ratings_a: [0],
+			score_g: res.score,
+			ratings_g: res.ratings,
 			updated: date[0]
 		}
 	});

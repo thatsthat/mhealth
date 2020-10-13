@@ -3,16 +3,16 @@ var aStore = require('./asearch.js');
 var fs = require('fs');
 var simil = require('string-similarity');
 const parse2csv = require('json2csv');
-const numApps = process.argv[2];
+const numApps = 5; //process.argv[2];
 
 justDoIt()
   .then((resul, err) => {
-    const file_name = ['results/App_Results_' + numApps + '.csv'];
+    const file_name = ['results/App_allLang_Results_' + numApps + '.csv'];
     const resFields = Object.keys(resul[0]);
-    const opts = {fields: resFields, withBOM: true};
+    const opts = { fields: resFields, withBOM: true };
     const resul_csv = parse2csv.parse(resul, opts);
     fs.writeFile(file_name.toString(), resul_csv, (err) => {
-    //fs.writeFile(file_name.toString(), JSON.stringify(resul_csv, null, 2), (err) => {
+      //fs.writeFile(file_name.toString(), JSON.stringify(resul_csv, null, 2), (err) => {
       if (err) throw err;
       console.log('Apps saved!');
     });
@@ -33,10 +33,24 @@ async function justDoIt() {
       resAll = resAll.concat(resApple);
     }
   }
-  var firstRound = mergeDups(resAll);
-  var secRound = await findMissing(firstRound);
+  let firstRound = mergeDups(resAll);
+  let secRound = await findMissing(firstRound);
+  let secondRound = mergeDups(secRound);
 
-  return mergeDups(secRound);
+  return postProc(secondRound)
+}
+
+function postProc(fullRes) {
+  return fullRes.map(res => {
+    if (res.score_a.length == 1)
+      res.score_a = res.score_a[0];
+    else {
+      let nonzScores = res.score_a.filter(elem => elem > 0);
+      res.score_a = nonzScores.reduce(function(a, b) { return a + b }, 0) / nonzScores.length;
+    }
+    res.ratings_a = res.ratings_a.reduce(function(a, b) { return a + b }, 0);
+    return res;
+  });
 }
 
 function mergeDups(fullRes) {
@@ -67,6 +81,18 @@ function mergeDups(fullRes) {
       }
       if (!(ac.genre.includes(cv.genre))) {
         ac.genre = ac.genre.concat([', ' + cv.genre])
+      }
+      if (!(ac.score_a.includes(cv.score_a[0]))) {
+        ac.score_a.push(cv.score_a[0]);
+      }
+      if (!(ac.ratings_a.includes(cv.ratings_a[0]))) {
+        ac.ratings_a.push(cv.ratings_a[0]);
+      }
+      if (!(ac.score_g) && (cv.score_g)) {
+        ac.score_g = cv.score_g;
+      }
+      if (!(ac.ratings_g) && (cv.ratings_g)) {
+        ac.ratings_g = cv.ratings_g;
       }
       return ac;
     })
