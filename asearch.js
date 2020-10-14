@@ -68,6 +68,8 @@ function pruneResults(fullResults, searchTerms, country) {
 			ratings_g: '',
 			score_a: [sc0re],
 			ratings_a: [res.reviews],
+			dev_g: '',
+			dev_a: res.developer,
 			updated: res.updated.substring(0, 10)
 		};
 	})

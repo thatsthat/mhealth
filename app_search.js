@@ -7,7 +7,7 @@ const numApps = 5; //process.argv[2];
 
 justDoIt()
   .then((resul, err) => {
-    const file_name = ['results/App_allLang_Results_' + numApps + '.csv'];
+    const file_name = ['results/App_eng_Results_' + numApps + '.csv'];
     const resFields = Object.keys(resul[0]);
     const opts = { fields: resFields, withBOM: true };
     const resul_csv = parse2csv.parse(resul, opts);
@@ -59,41 +59,38 @@ function mergeDups(fullRes) {
   var iterRes = fullRes;;
 
   while (iterRes.length > 0) {
-    currTitle = iterRes[0].title;
+    let currTitle = iterRes[0].title;
     // get currTitle and its duplicates (if any) into filtRes
-    var filtRes = iterRes.filter(element => element.title.toUpperCase() == currTitle.toUpperCase());
+    let filtRes = iterRes.filter(element => element.title.toUpperCase() == currTitle.toUpperCase());
     // remove currTitle and its duplicates from iterRes
     iterRes = iterRes.filter(element => element.title.toUpperCase() != currTitle.toUpperCase());
     // group all duplicates into a single app. Concatenate fields that are different
-    groupedObj = filtRes.reduce((ac, cv) => {
+    let groupedObj = filtRes.reduce((ac, cv) => {
       ac.title = cv.title;
-      if (!(ac.countries.includes(cv.countries))) {
+    // Merge some data fields in different ways --------------------------------
+      if (!(ac.countries.includes(cv.countries)))
         ac.countries = ac.countries.concat([', ' + cv.countries])
-      }
-      if (!(ac.terms.includes(cv.terms))) {
+      if (!(ac.terms.includes(cv.terms)))
         ac.terms = ac.terms.concat([', ' + cv.terms])
-      }
-      if (!(ac.store.includes(cv.store))) {
+      if (!(ac.store.includes(cv.store)))
         ac.store = ac.store.concat([', ' + cv.store])
-      }
-      if (!(ac.appId.includes(cv.appId))) {
+      if (!(ac.appId.includes(cv.appId)))
         ac.appId = ac.appId.concat([', ' + cv.appId])
-      }
-      if (!(ac.genre.includes(cv.genre))) {
+      if (!(ac.genre.includes(cv.genre)))
         ac.genre = ac.genre.concat([', ' + cv.genre])
-      }
-      if (!(ac.score_a.includes(cv.score_a[0]))) {
+      if (!(ac.score_a.includes(cv.score_a[0])))
         ac.score_a.push(cv.score_a[0]);
-      }
-      if (!(ac.ratings_a.includes(cv.ratings_a[0]))) {
+      if (!(ac.ratings_a.includes(cv.ratings_a[0])))
         ac.ratings_a.push(cv.ratings_a[0]);
-      }
-      if (!(ac.score_g) && (cv.score_g)) {
+      if (!(ac.score_g) && (cv.score_g))
         ac.score_g = cv.score_g;
-      }
-      if (!(ac.ratings_g) && (cv.ratings_g)) {
+      if (!(ac.ratings_g) && (cv.ratings_g))
         ac.ratings_g = cv.ratings_g;
-      }
+      if (!(ac.dev_g) && (cv.dev_g))
+        ac.dev_g = cv.dev_g;
+      if (!(ac.dev_a) && (cv.dev_a))
+        ac.dev_a = cv.dev_a;
+    // -------------------------------------------------------------------------
       return ac;
     })
     groupedRes.push(groupedObj);

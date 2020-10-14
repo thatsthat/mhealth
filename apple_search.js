@@ -7,4 +7,5 @@ var yep = [0];
 
 let yop = yep.reduce(function(a, b) { return a + b }, 0);
 
-console.log(yop);
+if ('j') console.log('true');
+else console.log('false');

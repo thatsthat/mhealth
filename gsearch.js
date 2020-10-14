@@ -73,6 +73,8 @@ function pruneGoogle(fullResults, searchTerms, country, err) {
 			ratings_a: [0],
 			score_g: res.score,
 			ratings_g: res.ratings,
+			dev_g: res.developer,
+			dev_a: '',
 			updated: date[0]
 		}
 	});
