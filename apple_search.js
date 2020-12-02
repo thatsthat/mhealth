@@ -1,11 +1,11 @@
-// var store = require('app-store-scraper');
+var store = require('app-store-scraper');
 
-// store.app({ id: 389801252, ratings: true, country: 'us' })
-//     .then(console.log).catch(console.log);
-
-var yep = [0];
-
-let yop = yep.reduce(function(a, b) { return a + b }, 0);
-
-if ('j') console.log('true');
-else console.log('false');
+store.search({
+  term: 'asthma',
+  num: 20,
+  page: 3,
+  country : 'us',
+  lang: 'lang'
+})
+.then(console.log)
+.catch(console.log);

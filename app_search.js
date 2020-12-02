@@ -3,7 +3,7 @@ var aStore = require('./asearch.js');
 var fs = require('fs');
 var simil = require('string-similarity');
 const parse2csv = require('json2csv');
-const numApps = 5; //process.argv[2];
+const numApps = 200; //process.argv[2];
 
 justDoIt()
   .then((resul, err) => {
@@ -33,6 +33,7 @@ async function justDoIt() {
       resAll = resAll.concat(resApple);
     }
   }
+  resAll = resAll.filter(Boolean); // remove 'undefined' apps
   let firstRound = mergeDups(resAll);
   let secRound = await findMissing(firstRound);
   let secondRound = mergeDups(secRound);
@@ -40,7 +41,7 @@ async function justDoIt() {
   return postProc(secondRound)
 }
 
-function postProc(fullRes) {
+function postProc(fullRes) { // Calculate average of scores and sum ratings
   return fullRes.map(res => {
     if (res.score_a.length == 1)
       res.score_a = res.score_a[0];
@@ -67,7 +68,7 @@ function mergeDups(fullRes) {
     // group all duplicates into a single app. Concatenate fields that are different
     let groupedObj = filtRes.reduce((ac, cv) => {
       ac.title = cv.title;
-    // Merge some data fields in different ways --------------------------------
+      // Merge some data fields in different ways --------------------------------
       if (!(ac.countries.includes(cv.countries)))
         ac.countries = ac.countries.concat([', ' + cv.countries])
       if (!(ac.terms.includes(cv.terms)))
@@ -90,7 +91,7 @@ function mergeDups(fullRes) {
         ac.dev_g = cv.dev_g;
       if (!(ac.dev_a) && (cv.dev_a))
         ac.dev_a = cv.dev_a;
-    // -------------------------------------------------------------------------
+      // -------------------------------------------------------------------------
       return ac;
     })
     groupedRes.push(groupedObj);
@@ -101,9 +102,8 @@ function mergeDups(fullRes) {
 async function findMissing(fullRes) {
 
   var missingApps = [];
-  // debugger;
-  var filtRes = fullRes.filter(element => element.store.split(',').length == 1) // Leave only apps present in one store
-
+  // Leave only apps present in one store
+  var filtRes = fullRes.filter(element => element.store.split(',').length == 1)
   for (let i = 0; i < filtRes.length; i++) {
     var app = [];
     country = filtRes[i].countries.split(',', 1); // If multiple countries, take the first one
@@ -111,15 +111,16 @@ async function findMissing(fullRes) {
     title = filtRes[i].title;
     shortTitle = title.substring(0, 15);
     if (store == 'Apple') {
-      try { app = await gStore.gScrape(shortTitle, country[0], 1); }
+      try { app = await gStore.gScrape(shortTitle, country[0], 5); }
       catch (e) { console.log('No app found'); }
     }
     else {
-      try { app = await aStore.aScrape(shortTitle, country[0], 1); }
+      try { app = await aStore.aScrape(shortTitle, country[0], 5); }
       catch (e) { console.log('No app found'); }
     }
-    if (app.length > 0) {
-      var likely = simil.compareTwoStrings(shortTitle.toUpperCase(), app[0].title.toUpperCase().substring(0, 15));
+    if ((app !== undefined) && (app.length > 0)) {
+      var likely = simil.compareTwoStrings(shortTitle.toUpperCase(),
+        app[0].title.toUpperCase().substring(0, 15));
       if (likely > 0.8) missingApps.push(app[0]);
     }
   }

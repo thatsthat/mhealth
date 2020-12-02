@@ -12,9 +12,9 @@ module.exports = {
 			price: 'all', // all, free, paid
 			fullDetail: true, // if true an extra request is made for each app
 			throttle: 5 // Throttle to X requests per second
-		}).catch(e => console.log('Error: ', e.message));
-		res = await getFullRes(res).catch(e => console.log('Error: ', e.message));
-		return pruneGoogle(res, terms, countr);
+		}).catch(e => console.log('2Error: ', e.message));
+		res = await getFullRes(res).catch(e => console.log('3Error: ', e.message));
+		return pruneResults(res, terms, countr);
 	}
 }
 
@@ -22,14 +22,14 @@ async function getFullRes(shortRes) {
 	return Promise.all(
 		shortRes.map(async a => {
 			return await gplay.app({ appId: a.appId })
-				.catch(e => console.log('Error: ', e.message));
+				.catch(e => console.log('1Error: ', e.message));
 		})
 	)
 }
 
-function pruneGoogle(fullResults, searchTerms, country, err) {
+function pruneResults(fullResults, searchTerms, country, err) {
 	const relevCats = ['Health & Fitness', 'Medical', 'Weather'];
-	var engLang;
+	var engLangG;
 	if (fullResults === undefined)
 		return fullResults;
 
@@ -46,17 +46,17 @@ function pruneGoogle(fullResults, searchTerms, country, err) {
 			err = e;
 		}
 		if ((eps.length) && (eps[0][0] == 'english')) {
-			engLang = true;
+			engLangG = true;
 			return true;
 		}
 		else {
-			engLang = false;
-			return true;
+			engLangG = false;
+			return false;
 		}
 	});
 	return filtRes.map(res => {
 		var d = new Date(res.updated);
-		date = [d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()];
+		var date = [d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()];
 		return {
 			title: res.title,
 			appId: res.appId,
@@ -65,7 +65,8 @@ function pruneGoogle(fullResults, searchTerms, country, err) {
 			genre: res.genre,
 			terms: searchTerms,
 			countries: country,
-			english: engLang,
+			//englishG: engLangG,
+			//englishA: '',
 			store: 'Google',
 			description: res.description.substring(0, 2500),
 			installs: res.installs,

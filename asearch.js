@@ -11,8 +11,10 @@ module.exports = {
 			num: nums, // Number of search results, default 50
 			page: 1, // Results page to retrieve
 			idsOnly: false, // skip extra request for each app
-			ratings: true
-		}).catch(e => console.log('Error: ', e.message));
+			ratings: true,
+			maxAttempts: 3,
+			attemptWait: 5
+		}).catch(e => console.log('4Error: ', e.message));
 		return pruneResults(res, terms, countr)
 	}
 }
@@ -21,7 +23,7 @@ function pruneResults(fullResults, searchTerms, country) {
 	if (fullResults === undefined)
 		return fullResults;
 	var sc0re;
-	var engLang;
+	var engLangA;
 	var relevCats = ['Health & Fitness', 'Medical', 'Weather'];
 	const filtRes1 = fullResults.filter(element => relevCats.includes(element.primaryGenre)) // Leave only apps present in one store
 	var err = 'no error';
@@ -36,12 +38,12 @@ function pruneResults(fullResults, searchTerms, country) {
 			err = e;
 		}
 		if ((eps.length) && (eps[0][0] == 'english')) {
-			engLang = true;
+			engLangA = true;
 			return true;
 		}
 		else {
-			engLang = false;
-			return true;
+			engLangA = false;
+			return false;
 		}
 	});
 	return filtRes.map(res => {
@@ -59,9 +61,10 @@ function pruneResults(fullResults, searchTerms, country) {
 			genre: res.primaryGenre,
 			terms: searchTerms,
 			countries: country,
-			english: engLang,
+			//englishA: engLangA,
+			//englishG: '',
 			store: 'Apple',
-			inpvars: [searchTerms, country, 'Apple'],
+			//inpvars: [searchTerms, country, 'Apple'],
 			description: res.description.substring(0, 2500),
 			installs: '',
 			score_g: '',
