@@ -2,13 +2,13 @@ var stringSimilarity = require('string-similarity');
 var store = require('google-play-scraper');
 var fs = require('fs');
 
-justDoIt()
+main()
     .then( (resul, err) => {
 	console.log(JSON.stringify(resul, null, 2));
 	console.log(stringSimilarity.compareTwoStrings(process.argv[2].toUpperCase(), resul[0].title.toUpperCase())); 
     }).catch();  
 
-async function justDoIt(){
+async function main(){
     return  await scrapeApps(process.argv[2], process.argv[3], process.argv[4])
 }
 

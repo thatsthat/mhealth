@@ -66,6 +66,7 @@ function pruneResults(fullResults, searchTerms, country) {
 			store: 'Apple',
 			//inpvars: [searchTerms, country, 'Apple'],
 			description: res.description.substring(0, 2500),
+			summary: '',
 			installs: '',
 			score_g: '',
 			ratings_g: '',
