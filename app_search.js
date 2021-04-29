@@ -3,12 +3,20 @@ var aStore = require("./asearch.js");
 var fs = require("fs");
 var simil = require("string-similarity");
 const parse2csv = require("json2csv");
-const numApps = 200; //process.argv[2];
+const sqlite3 = require('sqlite3').verbose();
+const numApps = 3; //process.argv[2];
 
 main()
   .then((resul, err) => {
-    const file_name = ["results/App_eng_Results_" + numApps + ".csv"];
+    const file_name = ["results/App_german_Results_" + numApps + ".csv"];
     const resFields = Object.keys(resul[0]);
+    let db = new sqlite3.Database(':memory:', (err) => {
+      if (err) {
+        return console.error(err.message);
+      }
+        console.log('Connected to the in-memory SQlite database.');
+    });
+
     const opts = { fields: resFields, withBOM: true };
     const resul_csv = parse2csv.parse(resul, opts);
     fs.writeFile(file_name.toString(), resul_csv, (err) => {
@@ -26,8 +34,13 @@ async function main() {
     "asthma",
     "rhinitis",
     "allergic rhinitis",
+    "allergische schnupfen",
+    "allergische rhinitis",
+    "schnupfen",
+    "heuschnupfen",
+    "heufieber",
   ];
-  var countries = ["au", "us", "gb", "be"];
+  var countries = ["de"];
   var resAll = [];
 
   for (let i = 0; i < terms.length; i++) {
