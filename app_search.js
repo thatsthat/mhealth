@@ -3,43 +3,91 @@ var aStore = require("./asearch.js");
 var fs = require("fs");
 var simil = require("string-similarity");
 const parse2csv = require("json2csv");
-const sqlite3 = require('sqlite3').verbose();
+const SQLite = require("better-sqlite3");
 const numApps = 3; //process.argv[2];
 
 main()
   .then((resul, err) => {
     const file_name = ["results/App_german_Results_" + numApps + ".csv"];
     const resFields = Object.keys(resul[0]);
-    let db = new sqlite3.Database(':memory:', (err) => {
-      if (err) {
-        return console.error(err.message);
-      }
-        console.log('Connected to the in-memory SQlite database.');
+    // Connect to sqlite db
+    let db = new SQLite('results/apps.sqlite');
+    // Create apps table with all properties
+    db.prepare('DROP TABLE IF EXISTS apps').run();
+    db.prepare(`CREATE TABLE apps (appId TEXT,
+      title TEXT,
+      url  TEXT,
+      genre TEXT,
+      terms TEXT,
+      countries TEXT,
+      store TEXT,
+      description TEXT,
+      summary TEXT,
+      installs  TEXT,
+      score_a TEXT,
+      ratings_a TEXT,
+      score_g TEXT,
+      ratings_g TEXT,
+      dev_a TEXT,
+      dev_g TEXT,
+      updated TEXT);`)
+      .run();
+
+    db.pragma("synchronous = 1");
+    db.pragma("journal_mode = wal");
+    // Insert all apps from json array into sql table
+    resul.map((res) => {
+      db.prepare(`INSERT OR REPLACE INTO apps VALUES (
+      @appId,
+      @title,
+      @url,
+      @genre,
+      @terms,
+      @countries,
+      @store,
+      @description,
+      @summary,
+      @installs,
+      @score_a,
+      @ratings_a,
+      @score_g,
+      @ratings_g,
+      @dev_a,
+      @dev_g,
+      @updated);`).run(res);;
     });
+    // Read apps from DB
+    db.prepare("SELECT * FROM scores WHERE user = ? AND guild = ?");
 
     const opts = { fields: resFields, withBOM: true };
     const resul_csv = parse2csv.parse(resul, opts);
     fs.writeFile(file_name.toString(), resul_csv, (err) => {
-      //fs.writeFile(file_name.toString(), JSON.stringify(resul_csv, null, 2), (err) => {
+      // fs.writeFile(file_name.toString(), JSON.stringify(resul_csv, null, 2), (err) => {
       if (err) throw err;
       console.log("Apps saved!");
+    });
+
+    db.close((err) => {
+      if (err) { return console.error(err.message); }
+      console.log('Close the database connection.');
     });
   })
   .catch();
 
 async function main() {
   var terms = [
-    "hay fever",
-    "hayfever",
-    "asthma",
-    "rhinitis",
-    "allergic rhinitis",
-    "allergische schnupfen",
-    "allergische rhinitis",
-    "schnupfen",
-    "heuschnupfen",
-    "heufieber",
-  ];
+    "hay fever"];
+  /*  "hayfever",
+      "asthma",
+      "rhinitis",
+      "allergic rhinitis",
+      "allergische schnupfen",
+      "allergische rhinitis",
+      "schnupfen",
+      "heuschnupfen",
+      "heufieber",
+    ];
+  */
   var countries = ["de"];
   var resAll = [];
 

@@ -61,8 +61,8 @@ function pruneResults(fullResults, searchTerms, country, err) {
     var d = new Date(res.updated);
     var date = [d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate()];
     return {
-      title: res.title,
       appId: res.appId,
+      title: res.title,
       url: res.url,
       genre: res.genre,
       terms: searchTerms,
@@ -77,8 +77,8 @@ function pruneResults(fullResults, searchTerms, country, err) {
       ratings_a: [0],
       score_g: res.score,
       ratings_g: res.ratings,
-      dev_g: res.developer,
       dev_a: "",
+      dev_g: res.developer,
       updated: date[0],
     };
   });
