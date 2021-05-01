@@ -8,7 +8,7 @@ const numApps = 3; //process.argv[2];
 
 main()
   .then((resul, err) => {
-    const file_name = ["results/App_german_Results_" + numApps + ".csv"];
+    const file_name = ["results/App_german_Results_" + numApps + "sql.csv"];
     const resFields = Object.keys(resul[0]);
     // Connect to sqlite db
     let db = new SQLite('results/apps.sqlite');
@@ -32,7 +32,6 @@ main()
       dev_g TEXT,
       updated TEXT);`)
       .run();
-
     db.pragma("synchronous = 1");
     db.pragma("journal_mode = wal");
     // Insert all apps from json array into sql table
@@ -57,10 +56,10 @@ main()
       @updated);`).run(res);;
     });
     // Read apps from DB
-    db.prepare("SELECT * FROM scores WHERE user = ? AND guild = ?");
+    resul2 = db.prepare("SELECT * FROM apps").all();
 
     const opts = { fields: resFields, withBOM: true };
-    const resul_csv = parse2csv.parse(resul, opts);
+    const resul_csv = parse2csv.parse(resul2, opts);
     fs.writeFile(file_name.toString(), resul_csv, (err) => {
       // fs.writeFile(file_name.toString(), JSON.stringify(resul_csv, null, 2), (err) => {
       if (err) throw err;
