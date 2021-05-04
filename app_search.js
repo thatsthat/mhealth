@@ -4,7 +4,7 @@ var fs = require("fs");
 var simil = require("string-similarity");
 const parse2csv = require("json2csv");
 const SQLite = require("better-sqlite3");
-const numApps = 3; //process.argv[2];
+const numApps = 10; //process.argv[2];
 
 // Connect to sqlite db and initialize
 const db = new SQLite('results/apps.sqlite');
@@ -35,7 +35,6 @@ async function main(db) {
   var langG = [];
   var countr = [];
 
-  //console.log(inpCountrs);
   // Iterate over list of countries
   for (let i = 0; i < inpCountrs.length; i++) {
     countr = inpCountrs[i].country;
@@ -81,8 +80,6 @@ function postProc(fullRes) {
     res.ratings_a = res.ratings_a.reduce(function (a, b) {
       return a + b;
     }, 0);
-    if (res.summary)
-      res.description = res.summary.concat(", ", res.description);
     return res;
   });
 }
@@ -124,7 +121,6 @@ function mergeDups(fullRes) {
       ac.score_a = cv.score_a;
       ac.ratings_a = cv.ratings_a;
       // /FIXME
-      if (!ac.summary && cv.summary) ac.summary = cv.summary;
       if (!ac.score_g && cv.score_g) ac.score_g = cv.score_g;
       if (!ac.ratings_g && cv.ratings_g) ac.ratings_g = cv.ratings_g;
       if (!ac.dev_g && cv.dev_g) ac.dev_g = cv.dev_g;
@@ -185,7 +181,6 @@ function prepareDB(db) {
       languages TEXT,
       store TEXT,
       description TEXT,
-      summary TEXT,
       installs  TEXT,
       score_a TEXT,
       ratings_a TEXT,
@@ -212,7 +207,6 @@ function saveDB(resul, dataBase) {
       @languages,
       @store,
       @description,
-      @summary,
       @installs,
       @score_a,
       @ratings_a,

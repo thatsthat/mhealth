@@ -49,11 +49,16 @@ function pruneResults(fullResults, searchTerms, country, lang, err) {
     } catch (e) {
       err = e;
     }
-    if (eps.length && (eps[0][0] == "english" || eps[0][0] == "german")) {
-      engLangG = true;
+    if (eps.length && lang == "en" && eps[0][0] == "english") {
       return true;
-    } else {
-      engLangG = false;
+    }
+    else if (eps.length && lang == "es" && eps[0][0] == "spanish") {
+      return true;
+    }
+    else if (eps.length && lang == "de" && eps[0][0] == "german") {
+      return true;
+    }
+    else {
       return false;
     }
   });
@@ -69,8 +74,7 @@ function pruneResults(fullResults, searchTerms, country, lang, err) {
       countries: country,
       languages: lang,
       store: "Google",
-      description: res.description.substring(0, 2500),
-      summary: res.summary,
+      description: res.summary.concat(", ", res.description.substring(0, 2500)),
       installs: res.installs,
       //score_a: [0],
       //ratings_a: [0],
