@@ -4,33 +4,11 @@ var fs = require("fs");
 var simil = require("string-similarity");
 const parse2csv = require("json2csv");
 const SQLite = require("better-sqlite3");
-const numApps = 10; //process.argv[2];
+const numApps = 3; //process.argv[2];
 
-// Connect to sqlite db
+// Connect to sqlite db and initialize
 const db = new SQLite('results/apps.sqlite');
-
-// Create apps table with all properties
-db.prepare('DROP TABLE IF EXISTS apps').run();
-db.prepare(`CREATE TABLE apps (appId TEXT,
-      title TEXT,
-      url  TEXT,
-      genre TEXT,
-      terms TEXT,
-      countries TEXT,
-      store TEXT,
-      description TEXT,
-      summary TEXT,
-      installs  TEXT,
-      score_a TEXT,
-      ratings_a TEXT,
-      score_g TEXT,
-      ratings_g TEXT,
-      dev_a TEXT,
-      dev_g TEXT,
-      updated TEXT);`)
-  .run();
-db.pragma("synchronous = 1");
-db.pragma("journal_mode = wal");
+prepareDB(db);
 
 main(db)
   .then((resul, err) => {
@@ -40,7 +18,7 @@ main(db)
     const file_name = ["results/App_german_Results_" + numApps + ".csv"];
     const resFields = Object.keys(resul[0]);
     const opts = { fields: resFields, withBOM: true };
-    const resul_csv_sql = parse2csv.parse(resulSQL, opts);
+    const resul_csv = parse2csv.parse(resulSQL, opts);
     fs.writeFile(file_name.toString(), resul_csv, (err) => {
       if (err) throw err;
       console.log("Apps saved from SQL!");
@@ -73,13 +51,10 @@ async function main(db) {
     for (let j = 0; j < countries.length; j++) {
       console.log(`Searching ${terms[i]} in ${countries[j]} Google Play Store`);
       const resGoogle = await gStore.gScrape(terms[i], countries[j], numApps);
-      //console.log(resGoogle[0]);
       saveDB(resGoogle, db);
-      //resAll = resAll.concat(resGoogle);
       console.log(`Searching ${terms[i]} in ${countries[j]} iOS App Store`);
       const resApple = await aStore.aScrape(terms[i], countries[j], numApps);
       saveDB(resApple, db);
-      //resAll = resAll.concat(resApple);
     }
   }
   // read list of apps from DB
@@ -197,6 +172,31 @@ async function findMissing(fullRes) {
   return (resAll = fullRes.concat(missingApps));
 }
 
+function prepareDB(db) {
+  // Create apps table with all properties
+  db.prepare('DROP TABLE IF EXISTS apps').run();
+  db.prepare(`CREATE TABLE apps (appId TEXT,
+      title TEXT,
+      url  TEXT,
+      genre TEXT,
+      terms TEXT,
+      countries TEXT,
+      store TEXT,
+      description TEXT,
+      summary TEXT,
+      installs  TEXT,
+      score_a TEXT,
+      ratings_a TEXT,
+      score_g TEXT,
+      ratings_g TEXT,
+      dev_a TEXT,
+      dev_g TEXT,
+      updated TEXT);`)
+    .run();
+  db.pragma("synchronous = 1");
+  db.pragma("journal_mode = wal");
+}
+
 function saveDB(resul, dataBase) {
   // Insert all apps from json array into sql table
   resul.map((res) => {
@@ -221,7 +221,7 @@ function saveDB(resul, dataBase) {
   });
 }
 
-function prepareInput(countries) {
+function prepareInput() {
 
   // Define set of keywords for each language
   const engKW = ['urticaria', 'hive', 'hives', 'wheal', 'weal',
@@ -259,56 +259,57 @@ function prepareInput(countries) {
   // Define set of languages for each country
   const countries = {
     us: {
-      country: 'us';
-      languages: [langs.english, langs.spanish];
+      country: 'us',
+      languages: [langs.english, langs.spanish]
     },
     ca: {
-      country: 'ca';
-      languages: [langs.english];
+      country: 'ca',
+      languages: [langs.english]
     },
     uk: {
-      country: 'uk';
-      languages: [langs.english];
+      country: 'uk',
+      languages: [langs.english]
     },
     au: {
-      country: 'au';
+      country: 'au',
       languages: [langs.english]
     },
     es: {
-      country: 'es';
+      country: 'es',
       languages: [langs.spanish]
     },
     ec: {
-      country: 'ec';
+      country: 'ec',
       languages: [langs.spanish]
     },
     ar: {
-      country: 'ar';
+      country: 'ar',
       languages: [langs.spanish]
     },
     co: {
-      country: 'co';
+      country: 'co',
       languages: [langs.spanish]
     },
     cl: {
-      country: 'cl';
+      country: 'cl',
       languages: [langs.spanish]
     },
     mx: {
-      country: 'mx';
+      country: 'mx',
       languages: [langs.spanish]
     },
     de: {
-      country: 'de';
+      country: 'de',
       languages: [langs.german, langs.english]
     },
     ch: {
-      country: 'ch';
+      country: 'ch',
       languages: [langs.german, langs.english]
     },
     at: {
-      country: 'at';
+      country: 'at',
       languages: [langs.german, langs.english]
     }
   }
+  return countries;
 }

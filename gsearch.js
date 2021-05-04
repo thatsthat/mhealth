@@ -2,7 +2,7 @@ var gplay = require("google-play-scraper");
 var langDetect = require("languagedetect");
 
 module.exports = {
-  gScrape: async function (terms, countr, nums) {
+  gScrape: async function (terms, countr, lng, nums) {
     let res = await gplay
       .search({
         term: terms, // Search expression

@@ -2,7 +2,7 @@ var store = require("app-store-scraper");
 var langDetect = require("languagedetect");
 
 module.exports = {
-  aScrape: async (terms, countr, nums) => {
+  aScrape: async (terms, countr, lng, nums) => {
     let res = await store
       .search({
         term: terms, // Search expression
