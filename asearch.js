@@ -6,7 +6,7 @@ module.exports = {
     let res = await store
       .search({
         term: terms, // Search expression
-        lang: "en-us", // App language
+        lang: lng, // App language
         country: countr, // iOS App Store country 2 letter code
         num: nums, // Number of search results, default 50
         page: 1, // Results page to retrieve
@@ -16,21 +16,19 @@ module.exports = {
         attemptWait: 5,
       })
       .catch((e) => console.log("4Error: ", e.message));
-    return pruneResults(res, terms, countr);
+    return pruneResults(res, terms, countr, lng);
   },
 };
 
-function pruneResults(fullResults, searchTerms, country) {
+function pruneResults(fullResults, searchTerms, country, lang) {
   if (fullResults === undefined) return fullResults;
   var sc0re;
-  var engLangA;
-  var relevCats = ["Health & Fitness", "Medical", "Weather"];
+  var relevCats = ["Health & Fitness", "Medical"];
   const filtRes1 = fullResults.filter((element) =>
     relevCats.includes(element.primaryGenre)
   ); // Leave only apps present in one store
   var err = "no error";
 
-  const lang = [];
   const filtRes = filtRes1.filter((element) => {
     const lngDetector = new langDetect();
     try {
@@ -38,11 +36,16 @@ function pruneResults(fullResults, searchTerms, country) {
     } catch (e) {
       err = e;
     }
-    if (eps.length && (eps[0][0] == "english" || eps[0][0] == "german")) {
-      engLangA = true;
+    if (eps.length && lang == "en" && eps[0][0] == "english") {
       return true;
-    } else {
-      engLangA = false;
+    }
+    else if (eps.length && lang == "es" && eps[0][0] == "spanish") {
+      return true;
+    }
+    else if (eps.length && lang == "de" && eps[0][0] == "german") {
+      return true;
+    }
+    else {
       return false;
     }
   });
@@ -53,28 +56,25 @@ function pruneResults(fullResults, searchTerms, country) {
       sc0re = res.score;
     }
     return {
-      title: res.title,
       appId: res.appId,
+      title: res.title,
       url: res.url,
       // description: res.description,
       genre: res.primaryGenre,
       terms: searchTerms,
       countries: country,
-      //englishA: engLangA,
-      //englishG: '',
+      languages: lang,
       store: "Apple",
       //inpvars: [searchTerms, country, 'Apple'],
       description: res.description.substring(0, 2500),
       summary: "",
       installs: "",
+      score_a: [sc0re],
+      ratings_a: [res.reviews],
       score_g: "",
       ratings_g: "",
-      // score_a: [sc0re],
-      // ratings_a: [res.reviews],
-      score_a: sc0re,
-      ratings_a: res.reviews,
-      dev_g: "",
       dev_a: res.developer,
+      dev_g: "",
       updated: res.updated.substring(0, 10),
     };
   });

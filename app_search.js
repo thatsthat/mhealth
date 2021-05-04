@@ -12,13 +12,11 @@ prepareDB(db);
 
 main(db)
   .then((resul, err) => {
-    // Read apps from DB
-    resulSQL = db.prepare("SELECT * FROM apps").all();
     // Export apps array to CSV file
     const file_name = ["results/App_german_Results_" + numApps + ".csv"];
     const resFields = Object.keys(resul[0]);
     const opts = { fields: resFields, withBOM: true };
-    const resul_csv = parse2csv.parse(resulSQL, opts);
+    const resul_csv = parse2csv.parse(resul, opts);
     fs.writeFile(file_name.toString(), resul_csv, (err) => {
       if (err) throw err;
       console.log("Apps saved from SQL!");
@@ -31,32 +29,33 @@ main(db)
   .catch();
 
 async function main(db) {
-  var terms = [
-    "hay fever",
-    "hayfever",
-    "asthma"];
-  /*  "rhinitis",
-      "allergic rhinitis",
-      "allergische schnupfen",
-      "allergische rhinitis",
-      "schnupfen",
-      "heuschnupfen",
-      "heufieber",
-    ];
-  */
-  var countries = ['us', 'gb', 'au'];
-  //var resAll = [];
+  // Get variable with all input parameters
+  var inpCountrs = prepareInput();
+  var langA = [];
+  var langG = [];
+  var countr = [];
 
-  for (let i = 0; i < terms.length; i++) {
-    for (let j = 0; j < countries.length; j++) {
-      console.log(`Searching ${terms[i]} in ${countries[j]} Google Play Store`);
-      const resGoogle = await gStore.gScrape(terms[i], countries[j], numApps);
-      saveDB(resGoogle, db);
-      console.log(`Searching ${terms[i]} in ${countries[j]} iOS App Store`);
-      const resApple = await aStore.aScrape(terms[i], countries[j], numApps);
-      saveDB(resApple, db);
-    }
-  }
+  //console.log(inpCountrs);
+  // Iterate over list of countries
+  for (let i = 0; i < inpCountrs.length; i++) {
+    countr = inpCountrs[i].country;
+    // Iterate for each language in that country
+    for (let j = 0; j < inpCountrs[i].languages.length; j++) {
+      langA = inpCountrs[i].languages[j].opts.apple.lang;
+      langG = inpCountrs[i].languages[j].opts.google.lang;
+      // Iterate for each keyword in that language
+      for (let k = 0; k < inpCountrs[i].languages[j].keyWords.length; k++) {
+        const keyWord = inpCountrs[i].languages[j].keyWords[k];
+        console.log(`Searching ${keyWord} in ${countr} Google Play Store`);
+        const resGoogle = await gStore.gScrape(keyWord, countr, langA, numApps);
+        saveDB(resGoogle, db);
+        console.log(`Searching ${keyWord} in ${countr} iOS App Store`);
+        const resApple = await aStore.aScrape(keyWord, countr, langG, numApps);
+        saveDB(resApple, db);
+      };
+    };
+  };
+
   // read list of apps from DB
   let resAll = db.prepare("SELECT * FROM apps").all();
   resAll = resAll.filter(Boolean); // remove 'undefined' apps
@@ -110,6 +109,8 @@ function mergeDups(fullRes) {
         ac.countries = ac.countries.concat([", " + cv.countries]);
       if (!ac.terms.includes(cv.terms))
         ac.terms = ac.terms.concat([", " + cv.terms]);
+      if (!ac.terms.includes(cv.languages))
+        ac.terms = ac.languages.concat([", " + cv.languages]);
       if (!ac.store.includes(cv.store))
         ac.store = ac.store.concat([", " + cv.store]);
       if (!ac.appId.includes(cv.appId))
@@ -181,6 +182,7 @@ function prepareDB(db) {
       genre TEXT,
       terms TEXT,
       countries TEXT,
+      languages TEXT,
       store TEXT,
       description TEXT,
       summary TEXT,
@@ -207,6 +209,7 @@ function saveDB(resul, dataBase) {
       @genre,
       @terms,
       @countries,
+      @languages,
       @store,
       @description,
       @summary,
@@ -226,7 +229,7 @@ function prepareInput() {
   // Define set of keywords for each language
   const engKW = ['urticaria', 'hive', 'hives', 'wheal', 'weal',
     'angio-edema', 'angioedema', 'itch', 'pruritus'];
-  const spanWK = ['urticaria', 'roncha', 'ronchas', 'habón',
+  const spanKW = ['urticaria', 'roncha', 'ronchas', 'habón',
     'habon', 'angioedema', 'picor', 'prurito'];
   const gerKW = ['urtikaria', 'nesselsucht', 'nesselfieber',
     'quaddel', 'angioödem', 'juckreiz', 'pruritus'];
@@ -235,7 +238,7 @@ function prepareInput() {
   const langs = {
     english: {
       opts: {
-        apple: { lang: "en-us" },
+        apple: { lang: "en" },
         google: { lang: "en" }
       },
       keyWords: engKW
@@ -257,59 +260,59 @@ function prepareInput() {
   }
 
   // Define set of languages for each country
-  const countries = {
-    us: {
+  const countries = [
+    {
       country: 'us',
       languages: [langs.english, langs.spanish]
     },
-    ca: {
+    {
       country: 'ca',
       languages: [langs.english]
     },
-    uk: {
-      country: 'uk',
+    {
+      country: 'gb',
       languages: [langs.english]
     },
-    au: {
+    {
       country: 'au',
       languages: [langs.english]
     },
-    es: {
+    {
       country: 'es',
       languages: [langs.spanish]
     },
-    ec: {
+    {
       country: 'ec',
       languages: [langs.spanish]
     },
-    ar: {
+    {
       country: 'ar',
       languages: [langs.spanish]
     },
-    co: {
+    {
       country: 'co',
       languages: [langs.spanish]
     },
-    cl: {
+    {
       country: 'cl',
       languages: [langs.spanish]
     },
-    mx: {
+    {
       country: 'mx',
       languages: [langs.spanish]
     },
-    de: {
+    {
       country: 'de',
       languages: [langs.german, langs.english]
     },
-    ch: {
+    {
       country: 'ch',
       languages: [langs.german, langs.english]
     },
-    at: {
+    {
       country: 'at',
       languages: [langs.german, langs.english]
     }
-  }
+  ]
   return countries;
 }

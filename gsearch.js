@@ -6,7 +6,7 @@ module.exports = {
     let res = await gplay
       .search({
         term: terms, // Search expression
-        lang: "en", // App language
+        lang: lng, // App language
         country: countr, // Gplay store country 2 letter code
         num: nums, // Number of search results, max is 250
         price: "all", // all, free, paid
@@ -17,7 +17,7 @@ module.exports = {
     res = await getFullRes(res).catch((e) =>
       console.log("3Error: ", e.message)
     );
-    return pruneResults(res, terms, countr);
+    return pruneResults(res, terms, countr, lng);
   },
 };
 
@@ -31,8 +31,8 @@ async function getFullRes(shortRes) {
   );
 }
 
-function pruneResults(fullResults, searchTerms, country, err) {
-  const relevCats = ["Health & Fitness", "Medical", "Weather"];
+function pruneResults(fullResults, searchTerms, country, lang, err) {
+  const relevCats = ["Health & Fitness", "Medical"];
   var engLangG;
   if (fullResults === undefined) return fullResults;
 
@@ -67,8 +67,7 @@ function pruneResults(fullResults, searchTerms, country, err) {
       genre: res.genre,
       terms: searchTerms,
       countries: country,
-      //englishG: engLangG,
-      //englishA: '',
+      languages: lang,
       store: "Google",
       description: res.description.substring(0, 2500),
       summary: res.summary,
