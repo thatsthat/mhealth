@@ -4,16 +4,16 @@ var fs = require("fs");
 var simil = require("string-similarity");
 const parse2csv = require("json2csv");
 const SQLite = require("better-sqlite3");
-const numApps = 200; //process.argv[2];
+const numApps = 20; //process.argv[2];
 
 // Connect to sqlite db and initialize
-const db = new SQLite('results/apps.sqlite');
+const db = new SQLite("results/apps.sqlite");
 prepareDB(db);
 
 main(db)
   .then((resul, err) => {
     // Export apps array to CSV file
-    const file_name = ["results/App_sinusitis_" + numApps + ".csv"];
+    const file_name = ["results/App_asthma_" + numApps + ".csv"];
     const resFields = Object.keys(resul[0]);
     const opts = { fields: resFields, withBOM: true };
     const resul_csv = parse2csv.parse(resul, opts);
@@ -22,8 +22,10 @@ main(db)
       console.log("Apps saved from SQL!");
     });
     db.close((err) => {
-      if (err) { return console.error(err.message); }
-      console.log('Close the database connection.');
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log("Close the database connection.");
     });
   })
   .catch();
@@ -51,9 +53,9 @@ async function main(db) {
         console.log(`Searching ${keyWord} in ${countr} iOS App Store`);
         const resApple = await aStore.aScrape(keyWord, countr, langG, numApps);
         saveDB(resApple, db);
-      };
-    };
-  };
+      }
+    }
+  }
 
   // read list of apps from DB
   let resAll = db.prepare("SELECT * FROM apps").all();
@@ -68,7 +70,6 @@ async function main(db) {
 function postProc(fullRes) {
   // Calculate average of scores and sum ratings
   return fullRes.map((res) => {
-
     if (res.score_a.length == 1) res.score_a = res.score_a[0];
     else {
       let nonzScores = res.score_a.filter((elem) => elem > 0);
@@ -171,8 +172,9 @@ async function findMissing(fullRes) {
 
 function prepareDB(db) {
   // Create apps table with all properties
-  db.prepare('DROP TABLE IF EXISTS apps').run();
-  db.prepare(`CREATE TABLE apps (appId TEXT,
+  db.prepare("DROP TABLE IF EXISTS apps").run();
+  db.prepare(
+    `CREATE TABLE apps (appId TEXT,
       title TEXT,
       url  TEXT,
       genre TEXT,
@@ -188,8 +190,8 @@ function prepareDB(db) {
       ratings_g TEXT,
       dev_a TEXT,
       dev_g TEXT,
-      updated TEXT);`)
-    .run();
+      updated TEXT);`
+  ).run();
   db.pragma("synchronous = 1");
   db.pragma("journal_mode = wal");
 }
@@ -198,7 +200,9 @@ function saveDB(resul, dataBase) {
   if (resul) {
     // Insert all apps from json array into sql table
     for (let i = 0; i < resul.length; i++) {
-      dataBase.prepare(`INSERT OR REPLACE INTO apps VALUES (
+      dataBase
+        .prepare(
+          `INSERT OR REPLACE INTO apps VALUES (
       @appId,
       @title,
       @url,
@@ -215,75 +219,68 @@ function saveDB(resul, dataBase) {
       @ratings_g,
       @dev_a,
       @dev_g,
-      @updated);`).run(resul[i]);
+      @updated);`
+        )
+        .run(resul[i]);
     }
   }
 }
 
 function prepareInput() {
-
   // Define set of keywords for each language
-  // const engKW = ['urticaria', 'hive', 'hives', 'wheal', 'weal',
-  //  'angio-edema', 'angioedema', 'itch', 'pruritus'];
-  //const engKW = ['insect allergy', 'venom allergy', 'anaphylaxis'];
-  const engKW = ['sinusitis', 'rhinosinusitis'];
-  const spanKW = ['urticaria', 'roncha', 'ronchas', 'habón',
-    'habon', 'angioedema', 'picor', 'prurito'];
-  const gerKW = ['urtikaria', 'nesselsucht', 'nesselfieber',
-    'quaddel', 'angioödem', 'juckreiz', 'pruritus'];
+  const engKW = ["asthma", "peak flow", "pulmonary function"];
+  const spanKW = [];
+  const gerKW = [];
 
-  // Define each language 
+  // Define each language
   const langs = {
     english: {
       opts: {
         apple: { lang: "en" },
-        google: { lang: "en" }
+        google: { lang: "en" },
       },
-      keyWords: engKW
+      keyWords: engKW,
     },
     spanish: {
       opts: {
         apple: { lang: "es" },
-        google: { lang: "es" }
+        google: { lang: "es" },
       },
-      keyWords: spanKW
+      keyWords: spanKW,
     },
     german: {
       opts: {
         apple: { lang: "de" },
-        google: { lang: "de" }
+        google: { lang: "de" },
       },
-      keyWords: gerKW
-    }
-  }
+      keyWords: gerKW,
+    },
+  };
 
   // Define set of languages for each country
   const countries = [
     {
-      country: 'us',
-      languages: [langs.english]
+      country: "us",
+      languages: [langs.english],
     },
-
     {
-      country: 'gb',
-      languages: [langs.english]
+      country: "gb",
+      languages: [langs.english],
     },
-
     {
-      country: 'de',
-      languages: [langs.english]
-    }
+      country: "au",
+      languages: [langs.english],
+    },
+    {
+      country: "ca",
+      languages: [langs.english],
+    },
     /*  
-
-     {
-      country: 'ca',
-      languages: [langs.english]
-    },
-     {
-      country: 'au',
-      languages: [langs.english]
-    },
-    {
+        {
+          country: "de",
+          languages: [langs.english],
+        },    
+        {
           country: 'es',
           languages: [langs.spanish]
         },
@@ -316,6 +313,6 @@ function prepareInput() {
           languages: [langs.german, langs.english]
         }
         */
-  ]
+  ];
   return countries;
 }
