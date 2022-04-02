@@ -11,7 +11,7 @@ module.exports = {
         num: nums, // Number of search results, max is 250
         price: "all", // all, free, paid
         fullDetail: true, // if true an extra request is made for each app
-        throttle: 5, // Throttle to X requests per second
+        throttle: 4, // Throttle to X requests per second
       })
       .catch((e) => console.log("2Error: ", e.message));
     res = await getFullRes(res).catch((e) =>

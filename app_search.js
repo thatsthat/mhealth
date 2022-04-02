@@ -4,7 +4,7 @@ var fs = require("fs");
 var simil = require("string-similarity");
 const parse2csv = require("json2csv");
 const SQLite = require("better-sqlite3");
-const numApps = 10; //process.argv[2];
+const numApps = 200; //process.argv[2];
 
 // Connect to sqlite db and initialize
 const db = new SQLite('results/apps.sqlite');
@@ -13,7 +13,7 @@ prepareDB(db);
 main(db)
   .then((resul, err) => {
     // Export apps array to CSV file
-    const file_name = ["results/App_german_Results_" + numApps + ".csv"];
+    const file_name = ["results/App_sinusitis_" + numApps + ".csv"];
     const resFields = Object.keys(resul[0]);
     const opts = { fields: resFields, withBOM: true };
     const resul_csv = parse2csv.parse(resul, opts);
@@ -106,8 +106,8 @@ function mergeDups(fullRes) {
         ac.countries = ac.countries.concat([", " + cv.countries]);
       if (!ac.terms.includes(cv.terms))
         ac.terms = ac.terms.concat([", " + cv.terms]);
-      if (!ac.terms.includes(cv.languages))
-        ac.terms = ac.languages.concat([", " + cv.languages]);
+      if (!ac.languages.includes(cv.languages))
+        ac.languages = ac.languages.concat([", " + cv.languages]);
       if (!ac.store.includes(cv.store))
         ac.store = ac.store.concat([", " + cv.store]);
       if (!ac.appId.includes(cv.appId))
@@ -195,9 +195,10 @@ function prepareDB(db) {
 }
 
 function saveDB(resul, dataBase) {
-  // Insert all apps from json array into sql table
-  resul.map((res) => {
-    dataBase.prepare(`INSERT OR REPLACE INTO apps VALUES (
+  if (resul) {
+    // Insert all apps from json array into sql table
+    for (let i = 0; i < resul.length; i++) {
+      dataBase.prepare(`INSERT OR REPLACE INTO apps VALUES (
       @appId,
       @title,
       @url,
@@ -214,15 +215,18 @@ function saveDB(resul, dataBase) {
       @ratings_g,
       @dev_a,
       @dev_g,
-      @updated);`).run(res);;
-  });
+      @updated);`).run(resul[i]);
+    }
+  }
 }
 
 function prepareInput() {
 
   // Define set of keywords for each language
-  const engKW = ['urticaria', 'hive', 'hives', 'wheal', 'weal',
-    'angio-edema', 'angioedema', 'itch', 'pruritus'];
+  // const engKW = ['urticaria', 'hive', 'hives', 'wheal', 'weal',
+  //  'angio-edema', 'angioedema', 'itch', 'pruritus'];
+  //const engKW = ['insect allergy', 'venom allergy', 'anaphylaxis'];
+  const engKW = ['sinusitis', 'rhinosinusitis'];
   const spanKW = ['urticaria', 'roncha', 'ronchas', 'habón',
     'habon', 'angioedema', 'picor', 'prurito'];
   const gerKW = ['urtikaria', 'nesselsucht', 'nesselfieber',
@@ -257,56 +261,61 @@ function prepareInput() {
   const countries = [
     {
       country: 'us',
-      languages: [langs.english, langs.spanish]
-    },
-    {
-      country: 'ca',
       languages: [langs.english]
     },
+
     {
       country: 'gb',
       languages: [langs.english]
     },
+
     {
+      country: 'de',
+      languages: [langs.english]
+    }
+    /*  
+
+     {
+      country: 'ca',
+      languages: [langs.english]
+    },
+     {
       country: 'au',
       languages: [langs.english]
     },
     {
-      country: 'es',
-      languages: [langs.spanish]
-    },
-    {
-      country: 'ec',
-      languages: [langs.spanish]
-    },
-    {
-      country: 'ar',
-      languages: [langs.spanish]
-    },
-    {
-      country: 'co',
-      languages: [langs.spanish]
-    },
-    {
-      country: 'cl',
-      languages: [langs.spanish]
-    },
-    {
-      country: 'mx',
-      languages: [langs.spanish]
-    },
-    {
-      country: 'de',
-      languages: [langs.german, langs.english]
-    },
-    {
-      country: 'ch',
-      languages: [langs.german, langs.english]
-    },
-    {
-      country: 'at',
-      languages: [langs.german, langs.english]
-    }
+          country: 'es',
+          languages: [langs.spanish]
+        },
+        {
+          country: 'ec',
+          languages: [langs.spanish]
+        },
+        {
+          country: 'ar',
+          languages: [langs.spanish]
+        },
+        {
+          country: 'co',
+          languages: [langs.spanish]
+        },
+        {
+          country: 'cl',
+          languages: [langs.spanish]
+        },
+        {
+          country: 'mx',
+          languages: [langs.spanish]
+        },
+        {
+          country: 'ch',
+          languages: [langs.german, langs.english]
+        },
+        {
+          country: 'at',
+          languages: [langs.german, langs.english]
+        }
+        */
   ]
   return countries;
 }
