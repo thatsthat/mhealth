@@ -1,4 +1,4 @@
-var gplay = require('google-play-scraper');
+var gplay = require('google-play-scraper').default;
 var langDetect = require('languagedetect');
 
 module.exports = {
@@ -10,7 +10,6 @@ module.exports = {
 			country: countr, // Gplay store country 2 letter code
 			num: nums, // Number of search results, max is 250
 			price: 'all', // all, free, paid
-			fullDetail: true, // if true an extra request is made for each app
 			throttle: 5 // Throttle to X requests per second
 		}).catch(e => console.log('2Error: ', e.message));
 		res = await getFullRes(res).catch(e => console.log('3Error: ', e.message));
