@@ -5,12 +5,15 @@
   "main": "app_search.js",
   "dependencies": {
     "app-store-scraper": "^0.18.0",
+    "csv-parse": "^6.1.0",
     "google-play-scraper": "^10.1.2",
     "json2csv": "^5.0.1",
     "languagedetect": "^2.0.0",
-    "string-similarity": "^4.0.2"
+    "openai": "^6.27.0",
+    "pg": "^8.20.0",
+    "string-similarity": "^4.0.2",
+    "tiktoken": "^1.0.22"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

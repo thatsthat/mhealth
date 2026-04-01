@@ -20,6 +20,7 @@ main()
   .catch();
 
 async function main() {
+  //var terms = ["hay fever"];
   var terms = [
     "hay fever",
     "hayfever",
@@ -27,7 +28,9 @@ async function main() {
     "rhinitis",
     "allergic rhinitis",
   ];
-  var countries = ["au", "us", "gb", "be"];
+
+  //var countries = ["us"];
+  var countries = ["au", "us", "gb"];
   var resAll = [];
 
   for (let i = 0; i < terms.length; i++) {
@@ -76,11 +79,11 @@ function mergeDups(fullRes) {
     let currTitle = iterRes[0].title;
     // get currTitle and its duplicates (if any) into filtRes
     let filtRes = iterRes.filter(
-      (element) => element.title.toUpperCase() == currTitle.toUpperCase()
+      (element) => element.title.toUpperCase() == currTitle.toUpperCase(),
     );
     // remove currTitle and its duplicates from iterRes
     iterRes = iterRes.filter(
-      (element) => element.title.toUpperCase() != currTitle.toUpperCase()
+      (element) => element.title.toUpperCase() != currTitle.toUpperCase(),
     );
     // group all duplicates into a single app. Concatenate fields that are different
     let groupedObj = filtRes.reduce((ac, cv) => {
@@ -116,7 +119,7 @@ async function findMissing(fullRes) {
   var missingApps = [];
   // Leave only apps present in one store
   var filtRes = fullRes.filter(
-    (element) => element.store.split(",").length == 1
+    (element) => element.store.split(",").length == 1,
   );
   for (let i = 0; i < filtRes.length; i++) {
     var app = [];
@@ -140,7 +143,7 @@ async function findMissing(fullRes) {
     if (app !== undefined && app.length > 0) {
       var likely = simil.compareTwoStrings(
         shortTitle.toUpperCase(),
-        app[0].title.toUpperCase().substring(0, 15)
+        app[0].title.toUpperCase().substring(0, 15),
       );
       if (likely > 0.8) missingApps.push(app[0]);
     }
